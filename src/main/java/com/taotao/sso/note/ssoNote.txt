@@ -1,0 +1,6 @@
+
+1.解决单点登录的方案——CAS。
+	详情：http://www.360doc.com/content/16/0830/11/10825198_586971443.shtml
+
+2.SpringMVC的规定：在SpringMVC中如果请求以html结尾，那么就不会返回JSON数据。
+	代码详情：见web.xml中406错误发生的原因

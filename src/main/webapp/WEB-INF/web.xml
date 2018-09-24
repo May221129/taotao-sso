@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5">
+
+	<display-name>taotao-sso</display-name>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring/springContextConfig*.xml</param-value>
+	</context-param>
+
+	<!--Spring的ApplicationContext 载入 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<!-- 编码过滤器，以UTF8编码 -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- 配置SpringMVC框架入口 -->
+	<servlet>
+		<servlet-name>taotao-sso</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring/springmvcContext.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>taotao-sso</servlet-name>
+		<!-- 为了和C端系统风格的一致，所以用.html -->
+		<url-pattern>*.html</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>taotao-sso</servlet-name>
+		<!-- 
+		406错误发生的原因：
+			 SpringMVC的规定：在SpringMVC中如果请求以html结尾，那么就不会返回JSON数据。
+		解决方案：
+			 所以为了让不是以".html"结尾的请求也能进入springmvc，这里就多配一个servlet-mapping。
+		整个流程：
+			 浏览器发url请求：http://sso.taotao.com/user/register.html；
+			 服务器只配置了*.html结尾的请求可以进入springmvc；
+			 服务器打到url为"user"的controller；
+			 controller找到对应的接收value = "register"的方法，通过springmvc配置的视图解析器拼出url请求的资源：/WEB-INF/views/register.jsp;
+			 register.jsp进行页面的渲染，请求各种js或json数据，
+			 	此时因为服务器只配置了*.html结尾的请求可以进入springmvc，所以register.jsp在渲染页面时发出的url也必须是.html结尾的；
+			 这时候就受“SpringMVC的规定：在SpringMVC中如果请求以html结尾，那么就不会返回JSON数据。” 限制，无法返回json数据了，就会报406错误；
+			 解决方法：这里多配一个servlet-mapping，规定"/service/*"类型的url也能进入springmvc；
+			 	再将register.jsp渲染页面所需发出的url修改成"/service/*"类型。（register.jsp请求了http://static.taotao.com中的静态资源，
+			 	其中的http://static.taotao.com\js\register静态资源中有发url到UserController的check()方法做用户名、手机号等是否有被注册过等校验，
+			 	该静态资源发出的url就可以修改为/service/*类型的，这样就能解决问题了。）
+		-->
+		<url-pattern>/service/*</url-pattern>
+	</servlet-mapping>
+	
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+</web-app>

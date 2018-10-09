@@ -31,13 +31,14 @@
 		<property name="suffix" value=".jsp"/>
 	</bean>
 	
-	<!-- 自定义拦截器的配置：该拦截器用于做token校验 -->
-	<mvc:interceptors>
+	<!-- 自定义拦截器的配置：该拦截器用于做token校验
+		 现在校验的工作已经交由common统一处理了。那个系统需要做校验，继承common中的拦截器类即可。 -->
+	<!-- <mvc:interceptors> -->
 		<!-- 
 			配置拦截器的第一种方式：
 			进入了springmvc框架的url都会被这个拦截器拦截。
 		 -->
-		<bean class="com.taotao.sso.interceptor.CheckoutInterceptor"></bean>
+		<!-- <bean class="com.taotao.sso.interceptor.CheckoutInterceptor"></bean> -->
 		
 		<!-- 
 			配置拦截器的第二种方式：
@@ -51,6 +52,6 @@
             <!-- 处理请求的拦截器： -->
 			 <!-- <bean class="com.taotao.sso.interceptor.CheckoutInterceptor"></bean> -->
 		<!-- </mvc:interceptor> -->
-	</mvc:interceptors>
+	<!-- </mvc:interceptors> -->
 	
 </beans>

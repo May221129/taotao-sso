@@ -12,9 +12,6 @@ import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-/**
- * 用户（含账号密码）
- */
 @Table(name = "tb_user")
 public class User {
 
@@ -22,17 +19,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Length(min = 6, max = 20, message = "用户名的长度必须在6~20之间！")
+    @Length(min = 6, max = 20, message = "用户名的长度在6~20之间.")
     private String username;
 
     @JsonIgnore //序列化时忽略该字段
-    @Length(min = 6, max = 20, message = "密码的长度必须在6~20之间！")
+    @Length(min = 6, max = 20, message = "密码的长度在6~20之间.")
     private String password;
 
-    @Length(min = 11, max = 11, message = "手机号的长度必须是11位！")
+    @Length(min = 11, max = 11, message = "手机号的长度必须是11位.")
     private String phone;
 
-    @Email(message = "邮箱地址的格式不正确！")
+    @Email(message = "邮箱地址的格式不正确.")
     private String email;
 
     private Date created;
@@ -94,11 +91,5 @@ public class User {
     public void setUpdated(Date updated) {
         this.updated = updated;
     }
-
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", password=" + password + ", phone=" + phone + ", email="
-				+ email + ", created=" + created + ", updated=" + updated + "]";
-	}
 
 }

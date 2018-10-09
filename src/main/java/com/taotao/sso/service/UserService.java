@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -124,23 +123,11 @@ public class UserService {
 
 	/**
 	 * 退出登录。
-	 * 
-	 * @throws IOException
-	 * @throws JsonMappingException
-	 * @throws JsonParseException
 	 */
 	public void logout(HttpServletRequest request, HttpServletResponse response)
 			throws JsonParseException, JsonMappingException, IOException {
-		Cookie[] cookies = request.getCookies();
-		String token = null;
-		for (int i = 0; i < cookies.length; i++) {
-			Cookie cook = cookies[i];
-			if (cook.getName().equalsIgnoreCase(COOKIE_TOKEN)) {// 获取键
-				token = cook.getValue();// 获取值
-				break;
-			}
-		}
-		if (null != token) {
+		String token = CookieUtils.getCookieValue(request, COOKIE_TOKEN);
+		if (StringUtils.isNotEmpty(token)) {
 			String jsonData = this.stringRedisTemplate.opsForValue().get(RedisKeyConstant.getToken(token));
 			User user = MEPPER.readValue(jsonData, User.class);
 			this.stringRedisTemplate.delete(RedisKeyConstant.getToken(token));// 删除redis中的token
@@ -148,5 +135,4 @@ public class UserService {
 			CookieUtils.myDeleteCookie(request, response, COOKIE_TOKEN);//删除cookie中的token
 		}
 	}
-
 }

@@ -17,6 +17,7 @@
 			<artifactId>taotao-common</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
+
 		<!-- 单元测试 -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -99,15 +100,11 @@
 			<artifactId>spring-data-redis</artifactId>
 			<version>1.5.2.RELEASE</version>
 		</dependency>
-		
-		<!-- 做数据校验用：
-			 这个工具是由写hibernate-orm框架的团队写的，但是该工具和hibernate-orm没有任何关系。
-			 它只是实现了javaSEE数据校验的一个工具包，而且实现得比较好，所以我们选择了它。
-		使用步骤：
-			 1.导包；
-			 2.在需要校验的Bean中添加校验规则，见com.taotao.sso.bean.User
-			 3.在校验数据的方法中添加@Valid注解，见Map<String, Object> com.taotao.sso.controller.UserControlloer.doRegister(@Valid User user)
-			 4.springmvc会将校验结果写入到BindingResult对象中，通过BindingResult判断，如果校验失败，自定义执行什么逻辑（跳转到错误页面？发邮件通知？……） -->
+
+		<!-- 做数据校验用： 这个工具是由写hibernate-orm框架的团队写的，但是该工具和hibernate-orm没有任何关系。 它只是实现了javaSEE数据校验的一个工具包，而且实现得比较好，所以我们选择了它。 
+			使用步骤： 1.导包； 2.在需要校验的Bean中添加校验规则，见com.taotao.sso.bean.User 3.在校验数据的方法中添加@Valid注解，见Map<String, 
+			Object> com.taotao.sso.controller.UserControlloer.doRegister(@Valid User 
+			user) 4.springmvc会将校验结果写入到BindingResult对象中，通过BindingResult判断，如果校验失败，自定义执行什么逻辑（跳转到错误页面？发邮件通知？……） -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -138,5 +135,12 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<!-- 通过下面这个配置，maven会自己给我们选择好jdk还是jre，就不会报让选择jdk还是jre这种错了。 -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
 
 </project>

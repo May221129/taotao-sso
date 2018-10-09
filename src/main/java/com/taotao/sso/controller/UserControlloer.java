@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,10 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.taotao.common.annotation.IgnoreCheckoutToken;
 import com.taotao.common.util.CookieUtils;
 import com.taotao.sso.bean.User;
 import com.taotao.sso.service.UserService;
@@ -33,8 +29,6 @@ import com.taotao.sso.service.UserService;
 public class UserControlloer extends ExceptionHanlingController {
 	
 	private static final String COOKIE_NAME = "TAOTAO_TOKEN";//cookie中token的key
-	
-	private static final String USER_FROM_REDIS = "USER_FROM_REDIS";//从Redis中通过token获取的User对象
 	
 	private static final String REAL_REQUEST_URL = "REAL_REQUEST_URL";
 	
@@ -47,7 +41,6 @@ public class UserControlloer extends ExceptionHanlingController {
 	 * 这里只是简单的做页面跳转，跳转到注册页面。
 	 * @IgnoreCheckoutToken:加了该注解，表示忽略验证token。
 	 */
-	@IgnoreCheckoutToken
 	@RequestMapping(value = "register", method = RequestMethod.GET)
 	public String register(){
 		return "register";
@@ -56,7 +49,6 @@ public class UserControlloer extends ExceptionHanlingController {
 	/**
 	 * 这里只是简单的做页面跳转，跳转到注册页面。
 	 */
-	@IgnoreCheckoutToken
 	@RequestMapping(value = "login", method = RequestMethod.GET)
 	public String login(){
 		return "login";
@@ -67,7 +59,6 @@ public class UserControlloer extends ExceptionHanlingController {
 	 * http://sso.taotao.com/user/{param}/{type}
 	 * param是校验的数据，type为类型，可选参数1、2、3分别代表username、phone、email
 	 */
-	@IgnoreCheckoutToken
 	@RequestMapping(value = "{param}/{type}", method = RequestMethod.GET)
 	public ResponseEntity<Boolean> check(@PathVariable("param")String param, 
 			@PathVariable("type")Integer type){
@@ -92,7 +83,6 @@ public class UserControlloer extends ExceptionHanlingController {
 	 * 4.springmvc会将校验结果写入到BindingResult对象中。
 	 * 5.通过BindingResult判断，如果校验失败，自定义执行什么逻辑。
 	 */
-	@IgnoreCheckoutToken
 	@RequestMapping(value = "doRegister", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> doRegister(@Valid User user, BindingResult bindingResult){
@@ -133,7 +123,6 @@ public class UserControlloer extends ExceptionHanlingController {
 	/**
 	 * 登录
 	 */
-	@IgnoreCheckoutToken
 	@RequestMapping(value = "doLogin", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> login(User user, HttpServletRequest request, HttpServletResponse response){
@@ -181,12 +170,17 @@ public class UserControlloer extends ExceptionHanlingController {
 	 */
 	@RequestMapping(value = "/checkoutToken", method = RequestMethod.GET)
 	public ResponseEntity<User> queryUserByToken(HttpServletRequest request) throws Exception{
-		User user = (User)request.getAttribute(USER_FROM_REDIS);
-		if(null == user){
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}else{
-			return ResponseEntity.ok(user);
-		}
+		//没用dubbo之前，是通过下面这些被注释掉的代码来实现“通过token查询到user对象并返回”这一功能的：
+//		User user = (User)request.getAttribute(USER_FROM_REDIS);
+//		if(null == user){
+//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//		}else{
+//			return ResponseEntity.ok(user);
+//		}
+		//用了dubbo之后，该接口就被废弃了，所以响应404：
+		User user = new User();
+		user.setUsername("该接口已经被废弃了，往后都别再调用该接口了，请访问‘ssoquery.taotao.com/user’或dubbo中的服务。");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(user);
 	}
 	
 	/**
